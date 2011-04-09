@@ -17,10 +17,10 @@ set -e
 [ -z $QI4J_VERSION ] && echo "QI4J_VERSION is not set" && exit 1
 
 usage() {
-  echo "qi4j-build [-p repo:project] command [flags]"
+  echo "qi4j-build [-p group:project] command [flags]"
   echo
   echo "  -p Select the target project"
-  echo "    repo can be core, libraries, extensions, tools, samples or tutorials"
+  echo "    group can be core, library, extension, tool, sample or tutorial"
   echo "    project is the base name of the targeted submodule"
   echo
   echo "  Available commands"
