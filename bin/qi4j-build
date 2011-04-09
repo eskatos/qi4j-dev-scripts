@@ -21,7 +21,7 @@ usage() {
   echo
   echo "  -p Select the target project"
   echo "    repo can be core, libraries, extensions, tools, samples or tutorials"
-  echo "    project is the base name of the targetted submodule"
+  echo "    project is the base name of the targeted submodule"
   echo
   echo "  Available commands"
   echo "    clean            Clean output"
@@ -33,6 +33,13 @@ usage() {
   echo "  Available flags"
   echo "    single           Ignore dependents modules"
   echo "    skipTests        Skip tests"
+  echo
+  echo "  Examples"
+  echo "    qi4j-build clean"
+  echo "    qi4j-build devinstall"
+  echo "    qi4j-build library:servlet test"
+  echo "    qi4j-build libraries install"
+  echo "    qi4j-build distinstall"
   echo
 }
 
