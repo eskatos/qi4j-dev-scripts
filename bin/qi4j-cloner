@@ -1,0 +1,82 @@
+#!/bin/sh
+# Helper script to clone the Qi4j codebase
+set -e
+
+usage() {
+  echo "Usage: ${0} <mode>"
+  echo "  Where <mode> can be read-only, platform, core"
+  echo
+  echo "  Read-only mode will clone the Qi4j codebase without commit access."
+  echo "  Platform mode will clone the Qi4j codebase for Platform Developers."
+  echo "  Core mode will clone the Qi4j codebase for Core Developers."
+  echo "  See http://qi4j.org/qi4j/codebase.html for details."
+  echo
+}
+
+SDK_RO="git://github.com/Qi4j/qi4j-sdk.git"
+SDK_RW="git@github.com:Qi4j/qi4j-sdk.git"
+SDK_DIR="qi4j-sdk"
+
+CORE_RO="git://github.com/Qi4j/qi4j-core.git"
+CORE_RW="git@github.com:Qi4j/qi4j-core.git"
+CORE_DIR="qi4j-core"
+
+LIB_RO="git://github.com/Qi4j/qi4j-extensions.git"
+LIB_RW="git@github.com:Qi4j/qi4j-extensions.git"
+LIB_DIR="qi4j-libraries"
+
+EXT_RO="git://github.com/Qi4j/qi4j-libraries.git"
+EXT_RW="git@github.com:Qi4j/qi4j-libraries.git"
+EXT_DIR="qi4j-extensions"
+
+MODE=${1}
+[ -s $MODE ] && usage && exit 1
+[ $MODE != "read-only" ] && [ $MODE != "platform" ] && [ $MODE != "core" ] && usage && exit 1
+[ -e ${SDK_DIR} ] && echo "A qi4j-sdk file or directory already exists, cannot continue." && exit 1
+
+clone_codebase() {
+
+  # Prepare escaped variable for use in regexps
+  CORE_RO_ESCAPED=$( echo ${CORE_RO} | sed -e's/\(\.\|\/\|\*\|\[\|\]\|\\\)/\\&/g' )
+  LIB_RO_ESCAPED=$( echo ${LIB_RO} | sed -e's/\(\.\|\/\|\*\|\[\|\]\|\\\)/\\&/g' )
+  EXT_RO_ESCAPED=$( echo ${EXT_RO} | sed -e's/\(\.\|\/\|\*\|\[\|\]\|\\\)/\\&/g' )
+  CORE_ESCAPED=$( echo ${2} | sed -e's/\(\/\|\\\|&\)/\\&/g' )
+  LIB_ESCAPED=$( echo ${3} | sed -e's/\(\/\|\\\|&\)/\\&/g' )
+  EXT_ESCAPED=$( echo ${4} | sed -e's/\(\/\|\\\|&\)/\\&/g' )
+
+  # Clone qi4j-sdk
+  git clone ${1}
+  cd ${SDK_DIR}
+
+  # Change git modules according to access level
+  sed -i'' -e "s/${CORE_RO_ESCAPED}/${CORE_ESCAPED}/" .gitmodules
+  sed -i'' -e "s/${LIB_RO_ESCAPED}/${LIB_ESCAPED}/" .gitmodules
+  sed -i'' -e "s/${EXT_RO_ESCAPED}/${EXT_ESCAPED}/" .gitmodules
+
+  # Clone submodules
+  git submodule init
+  git submodule update
+
+  # Checkout develop branch in all submodules
+  cd core
+  git checkout develop
+  cd ../libraries
+  git checkout develop
+  cd ../extensions
+  git checkout develop
+  cd ..
+
+  # Remove edited .gitmodules file so it do not make it back to the repository
+  git reset --hard
+    
+}
+
+echo "Will clone the Qi4j codebase in ${MODE} mode."
+
+if [ $MODE = "read-only" ] ; then
+  clone_codebase $SDK_RO $CORE_RO $LIB_RO $EXT_RO
+elif [ $MODE = "platform" ] ; then
+  clone_codebase $SDK_RO $CORE_RO $LIB_RW $EXT_RW
+elif [ $MODE = "core" ] ; then
+  clone_codebase $SDK_RW $CORE_RW $LIB_RW $EXT_RW
+fi

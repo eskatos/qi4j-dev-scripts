@@ -1,0 +1,70 @@
+#!/bin/sh
+set -e
+[ -z $QI4J_VERSION ] && echo "QI4J_VERSION is not set" && exit 1
+
+usage() {
+	echo "qi4j-build command [flags]"
+	echo ""
+	echo "  Available commands"
+	echo "    clean            Clean output"
+	echo "    test             Run tests"
+	echo "    install          Install only main artifacts"
+	echo "    devinstall       Install javadoc and sources artifacts"
+	echo "    distinstall      Install distributions archives"
+	echo ""
+	echo "  Available flags"
+	echo "    single           Ignore dependents modules"
+	echo "    skipTests        Skip tests"
+	echo ""
+}
+
+[ -z $1 ] && usage && exit 1
+command=$1
+gradle="gradle"
+
+shift
+while [ "$*" != "" ]
+do
+  case $1 in
+    single)
+      gradle="${gradle} -a";;
+    skipTests)
+      gradle="${gradle} -x test";;
+    *)
+      echo "Unknown flag ${1}"
+      echo
+      usage
+      exit 1;;
+  esac
+  shift
+done
+
+skip_full="-x javadoc -x javadocJar -x sourceJar"
+skip_dist="-x :javadocs -x :distLayout -x :tarBinaries -x :tarSources -x :zipBinaries -x :zipSources"
+case $command in
+  clean)
+    gradle="${gradle} clean"
+    ;;
+  test)
+    gradle="${gradle} test"
+    ;;
+  install)
+    gradle="${gradle} ${skip_full} ${skip_dist} install"
+    ;;
+  devinstall)
+    gradle="${gradle} ${skip_dist} install"
+    ;;
+  distinstall)
+    gradle="${gradle} install"
+    ;;
+  *)
+    echo "Unknown command ${command}"
+    echo
+    usage
+    exit 1;;
+esac
+
+gradle="${gradle} -Dversion=${QI4J_VERSION}"
+
+echo $gradle
+$gradle
