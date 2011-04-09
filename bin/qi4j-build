@@ -31,7 +31,6 @@ usage() {
   echo "    distinstall      Install distributions archives"
   echo
   echo "  Available flags"
-  echo "    single           Ignore dependents modules"
   echo "    skipTests        Skip tests"
   echo
   echo "  Examples"
@@ -44,13 +43,20 @@ usage() {
 }
 
 [ -z $1 ] && usage && exit 1
+
+gradle="gradle"
+
 target=""
 if [ "${1}" = "-p" ]
 then
   shift
+  gradle="${gradle} -a"
   case "${1}" in
+    # Special libraries plural groupId handling ...
+    library:*)
+      target=`echo $1 | sed -e "s/library:\(.*\)/:org.qi4j.libraries:org.qi4j.library.\1:/"`;;
     *:*)
-      target=`echo $1 | sed -e "s/\(.*\):\(.*\)/:org.qi4j.\1:org.qi4j.\1.\2:/"`;;
+      target=`echo $1 | sed -e "s/\(.*\):\(.*\)/:org.qi4j.\1s:org.qi4j.\1.\2:/"`;;
     *)
       target=":org.qi4j.${1}:";;
   esac
@@ -58,14 +64,11 @@ then
 fi
 
 command=$1
-gradle="gradle"
 
 shift
 while [ "$*" != "" ]
 do
   case $1 in
-    single)
-      gradle="${gradle} -a";;
     skipTests)
       gradle="${gradle} -x test";;
     *)
