@@ -52,6 +52,9 @@ then
   shift
   gradle="${gradle} -a"
   case "${1}" in
+    # Special core groupId handling as it is not going plural
+    core:*)
+      target=`echo $1 | sed -e "s/core:\(.*\)/:org.qi4j.core:org.qi4j.core.\1:/"`;;
     # Special libraries plural groupId handling ...
     library:*)
       target=`echo $1 | sed -e "s/library:\(.*\)/:org.qi4j.libraries:org.qi4j.library.\1:/"`;;
