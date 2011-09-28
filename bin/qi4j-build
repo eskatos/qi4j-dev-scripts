@@ -37,7 +37,9 @@ usage() {
   echo "    qi4j-build clean"
   echo "    qi4j-build devinstall"
   echo "    qi4j-build library:servlet test"
+  echo "    qi4j-build extension:entitystore-file test"
   echo "    qi4j-build libraries install"
+  echo "    qi4j-build extensions install"
   echo "    qi4j-build distinstall"
   echo
 }
@@ -58,6 +60,9 @@ then
     # Special libraries plural groupId handling ...
     library:*)
       target=`echo $1 | sed -e "s/library:\(.*\)/:org.qi4j.libraries:org.qi4j.library.\1:/"`;;
+    # Special extensions plural groupId handling ...
+    extension:*)
+      target=`echo $1 | sed -e "s/extension:\(.*\)/:org.qi4j.extensions:org.qi4j.extension.\1:/"`;;
     *:*)
       target=`echo $1 | sed -e "s/\(.*\):\(.*\)/:org.qi4j.\1s:org.qi4j.\1.\2:/"`;;
     *)
