@@ -81,7 +81,7 @@ echo "Will clone the Qi4j codebase in ${MODE} mode."
 if [ $MODE = "read-only" ] ; then
   clone_codebase $SDK_RO $CORE_RO $LIB_RO $EXT_RO
 elif [ $MODE = "platform" ] ; then
-  clone_codebase $SDK_RO $CORE_RO $LIB_RW $EXT_RW
+  clone_codebase $SDK_RW $CORE_RO $LIB_RW $EXT_RW
 elif [ $MODE = "core" ] ; then
   clone_codebase $SDK_RW $CORE_RW $LIB_RW $EXT_RW
 fi
