@@ -5,16 +5,6 @@ Clone and add the bin folder to your $PATH.
 Theses scripts are mostly tryouts written in shell script as I am comfortable with sh.
 Some could be ported to the Qi4j build system once proven useful.
 
-## qi4j-cloner
-
-    Usage: qi4j-cloner <mode>
-      Where <mode> can be read-only, platform, core
-
-      Read-only mode will clone the Qi4j codebase without commit access.
-      Platform mode will clone the Qi4j codebase for Platform Developers.
-      Core mode will clone the Qi4j codebase for Core Developers.
-      See http://qi4j.org/qi4j/codebase.html for details.
-
 ## qi4j-build
 
 This command can be run from any directory containing a Qi4j build.gradle file.
