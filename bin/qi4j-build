@@ -46,7 +46,13 @@ usage() {
 
 [ -z $1 ] && usage && exit 1
 
-gradle="gradle"
+if [ -f "gradlew" ]
+then
+    gradle="./gradlew"
+    echo "Using gradle wrapper found in current directory!"
+else
+    gradle="gradle"
+fi
 
 target=""
 if [ "${1}" = "-p" ]
@@ -88,6 +94,7 @@ do
   shift
 done
 
+skip_global=""
 skip_full="-x javadoc -x javadocJar -x sourceJar"
 skip_dist="-x :javadocs -x :distLayout -x :tarBinaries -x :tarSources -x :zipBinaries -x :zipSources"
 case $command in
@@ -98,13 +105,13 @@ case $command in
     gradle="${gradle} ${target}test"
     ;;
   install)
-    gradle="${gradle} ${skip_full} ${skip_dist} ${target}install"
+    gradle="${gradle} ${skip_global} ${skip_full} ${skip_dist} ${target}install"
     ;;
   devinstall)
-    gradle="${gradle} ${skip_dist} ${target}install"
+    gradle="${gradle} ${skip_global} ${skip_dist} ${target}install"
     ;;
   distinstall)
-    gradle="${gradle} ${target}install"
+    gradle="${gradle} ${skip_global} ${target}install"
     ;;
   *)
     echo "Unknown command ${command}"
