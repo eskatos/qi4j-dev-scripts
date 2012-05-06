@@ -94,7 +94,7 @@ do
   shift
 done
 
-skip_global=""
+skip_global="-x signArchives"
 skip_full="-x javadoc -x javadocJar -x sourceJar"
 skip_dist="-x :javadocs -x :distLayout -x :tarBinaries -x :tarSources -x :zipBinaries -x :zipSources"
 case $command in
